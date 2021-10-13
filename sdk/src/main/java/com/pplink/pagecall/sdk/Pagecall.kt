@@ -19,13 +19,17 @@ import java.lang.Exception
 private const val URL = "url"
 private const val HTML = "html"
 
+open class PagecallClient {
+    open fun onExit(){}
+}
+
 class Pagecall : Fragment() {
     private lateinit var _url: String
     private var _html: String? = null
     private lateinit var _binding: FragmentPagecallBinding
     private lateinit var _webView: WebView
     private var _filePathCallback: ValueCallback<Array<Uri>>? = null
-    open var onExit: () -> Unit = {}
+    open var pagecallClient: PagecallClient = PagecallClient()
 
     private val requestMultiplePermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -55,10 +59,10 @@ class Pagecall : Fragment() {
             _filePathCallback = null
         }
 
-    inner class PagecallClientInterface {
+    inner class PagecallClientInterface(private val pagecallClient: PagecallClient) {
         @JavascriptInterface
-        fun onClose() {
-            onExit()
+        fun onExit() {
+            pagecallClient.onExit()
         }
     }
 
@@ -123,7 +127,7 @@ class Pagecall : Fragment() {
 
         CookieManager.getInstance().setAcceptThirdPartyCookies(_webView, true)
 
-        _webView.addJavascriptInterface(PagecallClientInterface(), "Android")
+        _webView.addJavascriptInterface(PagecallClientInterface(pagecallClient), "Android")
 
         if (_html == null) {
             _webView.loadUrl(_url)

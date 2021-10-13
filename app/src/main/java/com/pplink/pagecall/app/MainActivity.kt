@@ -7,6 +7,7 @@ import android.webkit.JavascriptInterface
 import com.pplink.pagecall.app.databinding.ActivityMainBinding
 import com.pplink.pagecall.sdk.Pagecall
 import androidx.lifecycle.lifecycleScope
+import com.pplink.pagecall.sdk.PagecallClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,16 +38,7 @@ class MainActivity : AppCompatActivity() {
                 "<head>", "" +
                         "<head>\n" +
                         "<script>\n" +
-                        "window.close=()=>{Android.onClose();};\n" +
-                        "cordova = Object.create({}, {\n" +
-                        "    plugins: {\n" +
-                        "        value: false\n" +
-                        "    }, platformId: {\n" +
-                        "        value: \"ios\"\n" +
-                        "    }, platformVersion: {\n" +
-                        "        value: \"6.0.17\"\n" +
-                        "    }\n" +
-                        "});\n" +
+                        "window.close=()=>{Android.onExit();};\n" +
                         "</script>"
             )
 
@@ -55,12 +47,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setPagecall(url: String, html: String?) {
-        val pagecallFragment = Pagecall.newInstance(url, html)
-        pagecallFragment.onExit = { Log.d("Interface", "onExit") }
+        val pagecall = Pagecall.newInstance(url, html)
+        pagecall.pagecallClient = object: PagecallClient() {
+            override fun onExit() {
+                Log.d("Interface", "onExit")
+            }
+        }
 
         val transaction = supportFragmentManager.beginTransaction()
 
-        transaction.replace(R.id.pagecall, pagecallFragment, "pagecall")
+        transaction.replace(R.id.pagecall, pagecall, "pagecall")
         transaction.addToBackStack(null)
         transaction.commit()
     }
