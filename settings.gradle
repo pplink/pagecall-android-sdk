@@ -6,6 +6,6 @@ dependencyResolutionManagement {
         jcenter() // Warning: this repository is going to shut down soon
     }
 }
-rootProject.name = "app"
+rootProject.name = "pagecall"
 include ':app'
 include ':sdk'

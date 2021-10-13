@@ -19,27 +19,18 @@ import java.lang.Exception
 private const val URL = "url"
 private const val HTML = "html"
 
-class WebAppInterface(private val onClose: () -> Unit = {}) {
-
-    @JavascriptInterface
-    fun onCloseListener() {
-        // TODO 나가기 버튼을 눌렀을 시, 호출됨
-        this.onClose()
-    }
-}
-
-//webView.addJavascriptInterface(WebAppInterface(onClose = { this@WebViewActivity.finish() }), "Android")
-
 class Pagecall : Fragment() {
     private lateinit var _url: String
     private var _html: String? = null
     private lateinit var _binding: FragmentPagecallBinding
+    private lateinit var _webView: WebView
     private var _filePathCallback: ValueCallback<Array<Uri>>? = null
+    open var onExit: () -> Unit = {}
 
     private val requestMultiplePermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             permissions.entries.forEach {
-                Log.d("DEBUG", "${it.key} = ${it.value}")
+                Log.d("PagecallPermission", "${it.key} = ${it.value}")
             }
         }
 
@@ -64,6 +55,13 @@ class Pagecall : Fragment() {
             _filePathCallback = null
         }
 
+    inner class PagecallClientInterface {
+        @JavascriptInterface
+        fun onClose() {
+            onExit()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -79,9 +77,9 @@ class Pagecall : Fragment() {
         requestMultiplePermissionsLauncher.launch(PERMISSIONS)
         _binding = FragmentPagecallBinding.inflate(layoutInflater, container, false)
 
-        val webView = _binding.webView
+        _webView = _binding.webView
 
-        webView.apply {
+        _webView.apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             settings.allowFileAccess = true
@@ -123,12 +121,14 @@ class Pagecall : Fragment() {
             }
         }
 
-        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
+        CookieManager.getInstance().setAcceptThirdPartyCookies(_webView, true)
+
+        _webView.addJavascriptInterface(PagecallClientInterface(), "Android")
 
         if (_html == null) {
-            webView.loadUrl(_url)
+            _webView.loadUrl(_url)
         } else {
-            webView.loadDataWithBaseURL(_url, _html!!, "text/html", "utf-8", null)
+            _webView.loadDataWithBaseURL(_url, _html!!, "text/html", "utf-8", null)
         }
 
         return _binding.root
