@@ -26,24 +26,23 @@ class MainActivity : AppCompatActivity() {
         val url =
             "https://app.pagecall.net/6166384c3864013690838438/"
 
-//        setPagecall(url, null)
 
-        lifecycleScope.launch {
-            val urlConnection = URL(url).openConnection() as HttpURLConnection
-
-            var html: String = withContext(Dispatchers.IO) {
-                urlConnection.inputStream.bufferedReader().readText()
-            }
-            val newHtml = html.replace(
-                "<head>", "" +
-                        "<head>\n" +
-                        "<script>\n" +
-                        "window.close=()=>{Android.onExit();};\n" +
-                        "</script>"
-            )
-
-            setPagecall(url, newHtml)
-        }
+//        lifecycleScope.launch {
+//            val urlConnection = URL(url).openConnection() as HttpURLConnection
+//
+//            var html: String = withContext(Dispatchers.IO) {
+//                urlConnection.inputStream.bufferedReader().readText()
+//            }
+//            val newHtml = html.replace(
+//                "<head>", "" +
+//                        "<head>\n" +
+//                        "<script>\n" +
+//                        "window.close=()=>{Android.onExit();};\n" +
+//                        "</script>"
+//            )
+//            setPagecall(url, newHtml)
+//        }
+        setPagecall(url, null)
     }
 
     private fun setPagecall(url: String, html: String?) {

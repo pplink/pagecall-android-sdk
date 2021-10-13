@@ -15,15 +15,45 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.pplink.pagecall.sdk.databinding.FragmentPagecallBinding
 import java.lang.Exception
+import java.net.HttpURLConnection
+import java.net.URL
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val URL = "url"
 private const val HTML = "html"
 
 open class PagecallClient {
-    open fun onExit(){}
+    open fun onExit() {}
+}
+
+private class PagecallClientInterface(private val pagecallClient: PagecallClient) {
+    @JavascriptInterface
+    fun onExit() {
+        pagecallClient.onExit()
+    }
 }
 
 class Pagecall : Fragment() {
+    companion object {
+        @JvmStatic
+        fun newInstance(url: String, html: String?) =
+            Pagecall().apply {
+                arguments = Bundle().apply {
+                    putString(URL, url)
+                    putString(HTML, html)
+                }
+            }
+
+        val PERMISSIONS = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.MODIFY_AUDIO_SETTINGS
+        )
+    }
+
     private lateinit var _url: String
     private var _html: String? = null
     private lateinit var _binding: FragmentPagecallBinding
@@ -58,13 +88,6 @@ class Pagecall : Fragment() {
 
             _filePathCallback = null
         }
-
-    inner class PagecallClientInterface(private val pagecallClient: PagecallClient) {
-        @JavascriptInterface
-        fun onExit() {
-            pagecallClient.onExit()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,29 +152,20 @@ class Pagecall : Fragment() {
 
         _webView.addJavascriptInterface(PagecallClientInterface(pagecallClient), "Android")
 
-        if (_html == null) {
-            _webView.loadUrl(_url)
-        } else {
-            _webView.loadDataWithBaseURL(_url, _html!!, "text/html", "utf-8", null)
+        lifecycleScope.launch {
+            val html = if (_html == null) {
+                val urlConnection = URL(_url).openConnection() as HttpURLConnection
+
+                withContext(Dispatchers.IO) {
+                    urlConnection.inputStream.bufferedReader().readText()
+                }
+            } else {
+                _html!!
+            }
+
+            _webView.loadDataWithBaseURL(_url, html, "text/html", "utf-8", null)
         }
 
         return _binding.root
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(url: String, html: String?) =
-            Pagecall().apply {
-                arguments = Bundle().apply {
-                    putString(URL, url)
-                    putString(HTML, html)
-                }
-            }
-
-        val PERMISSIONS = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.MODIFY_AUDIO_SETTINGS
-        )
     }
 }
