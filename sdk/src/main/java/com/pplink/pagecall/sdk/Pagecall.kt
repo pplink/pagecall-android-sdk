@@ -54,12 +54,14 @@ class Pagecall : Fragment() {
         )
     }
 
+    open var pagecallClient: PagecallClient = PagecallClient()
+    open var customJavascript: String? = null
+
     private lateinit var _url: String
     private var _html: String? = null
     private lateinit var _binding: FragmentPagecallBinding
     private lateinit var _webView: WebView
     private var _filePathCallback: ValueCallback<Array<Uri>>? = null
-    open var pagecallClient: PagecallClient = PagecallClient()
 
     private val requestMultiplePermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -153,7 +155,7 @@ class Pagecall : Fragment() {
         _webView.addJavascriptInterface(PagecallClientInterface(pagecallClient), "Android")
 
         lifecycleScope.launch {
-            val html = if (_html == null) {
+            var html = if (_html == null) {
                 val urlConnection = URL(_url).openConnection() as HttpURLConnection
 
                 withContext(Dispatchers.IO) {
@@ -161,6 +163,16 @@ class Pagecall : Fragment() {
                 }
             } else {
                 _html!!
+            }
+
+            if (customJavascript != null) {
+                html = html.replace(
+                    "<head>", "" +
+                            "<head>\n" +
+                            "<script>\n" +
+                            "$customJavascript\n" +
+                            "</script>"
+                )
             }
 
             _webView.loadDataWithBaseURL(_url, html, "text/html", "utf-8", null)
