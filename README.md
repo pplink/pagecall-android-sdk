@@ -16,7 +16,6 @@
 1. 프로젝트의 settings.gradle 혹은 build.gradle에 다음을 추가합니다.
 ```
 // settings.gradle
-...
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -24,7 +23,6 @@ dependencyResolutionManagement {
         maven { url "https://jitpack.io" } // 이 라인을 추가합니다.
     }
 }
- ...
  
 // build.gradle
 allprojects {
