@@ -14,8 +14,7 @@
 ```
 ...
 repositories {
-     google()
-     mavenCentral()
+     ...
      maven { url "https://jitpack.io" } // 이 라인을 추가합니다.
  }
  ...
@@ -35,8 +34,7 @@ dependencies {
 override fun onCreate(savedInstanceState: Bundle?) 
 {
      ...
-     val url =
-         "Pagecall URL"
+     val url = "Pagecall URL"
      val customJavascript = "console.log("Hello, Pagecall");"
 
      setPagecall(url, null, customJavascript)
