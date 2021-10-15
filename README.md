@@ -1,6 +1,8 @@
 # Pagecall Android SDK
 [![](https://jitpack.io/v/pplink/pagecall-android-sdk.svg)](https://jitpack.io/#pplink/pagecall-android-sdk)
 ## 개요
+- 고객사의 원활한 Pagecall 도입을 위해 제공되는 Android SDK 입니다.
+- Android SDK를 활용한 데모를 제공하고 있습니다. [링크](https://github.com/pplink/pagecall-demo)
 - Pagecall SDK는 Fragment를 사용하고 있습니다.
 
 ## 기능
@@ -78,3 +80,6 @@ override fun onCreate(savedInstanceState: Bundle?)
      transaction.commit()
  }
 ```
+
+## 라이선스
+[Apache-2.0](./LICENSE)
