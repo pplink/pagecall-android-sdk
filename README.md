@@ -15,12 +15,24 @@
 ## 사용법
 1. 프로젝트의 settings.gradle 혹은 build.gradle에 다음을 추가합니다.
 ```
+// settings.gradle
 ...
-repositories {
-     ...
-     maven { url "https://jitpack.io" } // 이 라인을 추가합니다.
- }
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        ...
+        maven { url "https://jitpack.io" } // 이 라인을 추가합니다.
+    }
+}
  ...
+ 
+// build.gradle
+allprojects {
+    repositories {
+        ...
+        maven { url "https://jitpack.io" } // 이 라인을 추가합니다.
+    }
+}
 ````
 2. 페이지콜을 실행시키는 모듈의 build.gradle에 다음을 추가합니다.
 ```
