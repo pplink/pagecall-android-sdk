@@ -9,6 +9,9 @@
 - URL 방식, HTML 방식 모두 지원
 - 미팅 나가기, 에러 발생 등의 이벤트를 처리할 수 있는 인터페이스 (지원 예정)
 
+## 지원 범위
+- Android ≥ 9.0 (API Level 28)
+
 ## 사용법
 1. 프로젝트의 settings.gradle 혹은 build.gradle에 다음을 추가합니다.
 ```
@@ -29,7 +32,20 @@ dependencies {
 }
 ...
 ```
-3. 다음 예제와 같이 페이지콜을 실행합니다.
+3. AndroidManifest.xml에 다음 권한을 추가합니다.
+```
+...
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+<uses-permission android:name="android.permission.BLUETOOTH" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+<uses-permission android:name="android.webkit.PermissionRequest" />
+<uses-feature android:name="android.hardware.camera" />
+<uses-feature android:name="android.hardware.camera2.full" />
+```
+4. 다음 예제와 같이 페이지콜을 실행합니다.
 ```
 override fun onCreate(savedInstanceState: Bundle?) 
 {
