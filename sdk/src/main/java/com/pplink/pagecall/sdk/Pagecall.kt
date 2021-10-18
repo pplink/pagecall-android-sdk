@@ -152,8 +152,11 @@ class Pagecall : Fragment() {
 
         CookieManager.getInstance().setAcceptThirdPartyCookies(_webView, true)
 
+        // Pagecall Client 에 객체 주입. Android.something() <- 이런 식으로 네이티브 브릿지에 액세스 가능.
+        // 객체 이름을 바꾸고 싶다면, "Android" 를 변경해주면 된다.
         _webView.addJavascriptInterface(PagecallClientInterface(pagecallClient), "Android")
 
+        // 커스텀 자바스크립트 기능을 위해, url, html 여부 상관없이, 모두 html 을 불러와서 렌더링한다.
         lifecycleScope.launch {
             var html = if (_html == null) {
                 val urlConnection = URL(_url).openConnection() as HttpURLConnection
@@ -174,7 +177,7 @@ class Pagecall : Fragment() {
                             "</script>"
                 )
             }
-
+            // url 을 넣어주지 않으면, API, Socket 등이 정상적으로 동작하지 않음.
             _webView.loadDataWithBaseURL(_url, html, "text/html", "utf-8", null)
         }
 
