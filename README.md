@@ -12,7 +12,9 @@
 - 미팅 나가기, 에러 발생 등의 이벤트를 처리할 수 있는 인터페이스 (지원 예정)
 
 ## 지원 범위
-- Android ≥ 9.0 (API Level 28)
+- Android API ≥ 21
+- Pagecall SDK는 API >= 28 에서 안정된 동작을 보장합니다.
+- Pagecall SDK는 API < 24 에서 동작을 하지 않습니다.
 
 ## 사용법
 1. 프로젝트의 settings.gradle 혹은 build.gradle에 다음을 추가합니다.
